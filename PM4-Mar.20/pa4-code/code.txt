@@ -1,0 +1,95 @@
+%Part1 
+%Add 1 to X matrix for the input layer
+X=[ones(m,1),X];
+
+h1=X*Theta1';
+%Add 1 to hidden layer 1
+X2=[ones(size(h1, 1),1) sigmoid(h1)];
+h2=sigmoid(X2*Theta2');
+h_vec=h2(:);
+%Recall that the cost function fbr the neural network 
+for k = 1:num_labels,
+    y_k=y ==k;
+    J=J+((-log(h_vec(k, :)) * y_k - log(1 - h_vec(k, :)) * (1 - y_k)));
+end
+J=(1/m)*J
+J= J +(lambda/(2*m))*(sum(sum(Theta1(:,2:end).^2))+sum(sum(Theta2(:, 2:end) .^ 2)));
+
+
+%Part2 compute the gradients
+c=[1:num_labels]';
+for i = 1:m;
+    a_1=X(i,:);
+    h_2=Theta1*a_1';
+    a_2=sigmoid(h_2)';
+    a_2=[1,a_2];
+    h_3=Theta2*a_2';
+    a_3=sigmoid(h_3);
+    
+    error_term_3 = a_3 - (y(i) == c);
+    error_term_2 = (Theta2' * error_term_3) .* [1; sigmoidGradient(Theta1*a_1')];
+    
+    Theta1_grad = Theta1_grad + (error_term_2(2:end) * a_1);
+    Theta2_grad = Theta2_grad + (error_term_3 * a_2);
+end
+
+%Part3 regularization with the cost function and gradients
+
+Theta1_grad(:, 1) = Theta1_grad(:, 1) / m;
+Theta1_grad(:, 2:end) = Theta1_grad(:, 2:end) / m + ((lambda / m) * Theta1(:, 2:end));
+
+Theta2_grad(:, 1) = Theta2_grad(:, 1) / m;
+Theta2_grad(:, 2:end) = Theta2_grad(:, 2:end) / m + ((lambda / m) * Theta2(:, 2:end));
+
+a1 = [ones(m, 1), X]; % add bias
+
+a2 = sigmoid(a1 * Theta1'); % calculate activation for first hidden layer
+
+a2 = [ones(m, 1), a2]; % add bias
+
+h = sigmoid(a2 * Theta2'); % calculate h(x)
+
+y_recoded = eye(num_labels)(y, :); % re-encode y, a matrix instead of a vector
+
+% vectorized cost function
+J = (-1/m) * (sum(sum((y_recoded .* log(h)) + ((1 - y_recoded) .* (log(1 - h))))));
+
+
+
+
+% regularization terms
+J = J + lambda/(2*m)*(sum(sum(Theta1(:,2:end).^2)) + sum(sum(Theta2(:,2:end).^2)));
+
+
+
+% step 1
+a1 = [ones(m, 1), X]; % add bias
+z2 = a1 * Theta1';
+a2 = [ones(m, 1), sigmoid(z2)]; % calculate activation for first hidden layer, with bias
+z3 = a2 * Theta2';
+h = sigmoid(z3); % calculate h(x)
+
+
+% step 2
+% h and y are 5000x10 matrices
+delta3 = h - y_recoded;
+
+
+% step 3
+% for this step, need to add bias to sigmoidGradient(z2)
+delta2 = (delta3 * Theta2) .* [ones(size(z2, 1), 1), sigmoidGradient(z2)];
+delta2 = delta2(:, 2:end); % and subsequently, get rid of the bias
+
+% step 4
+Theta1_grad = Theta1_grad + delta2' * a1;
+Theta2_grad = Theta2_grad + delta3' * a2;
+
+% step 5
+Theta1_grad = (1/m) * Theta1_grad;
+Theta2_grad = (1/m) * Theta2_grad;
+
+% regularization
+Theta1_grad = Theta1_grad + (lambda/m) * [zeros(size(Theta1, 1), 1), Theta1(:,2:end)]
+Theta2_grad = Theta2_grad + (lambda/m) * [zeros(size(Theta2, 1), 1), Theta2(:,2:end)];
+
+C:\OCaml\emacs-23.3\bin;C:\OCaml\bin;C:\ProgramData\Oracle\Java\javapath;C:\Python27\;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\Lenovo\Fingerprint Manager Pro\;C:\Program Files (x86)\Common Files\lenovo\easyplussdk\bin;C:\ProgramData\Lenovo\ReadyApps;%NDK_ROOT%;ANDROID_SDK_ROOT%\tools;%JAVA_HOME%/bin;C:\apache-ant-1.9.4\bin;C:\cocos2d-js-v3.1\tools\cocos2d-console\bin;C:\Program Files (x86)\Intel\CilkTools\bin\;C:\Program Files\MATLAB\R2014a\runtime\win64;C:\Program Files\MATLAB\R2014a\bin;C:\Program Files\MATLAB\R2014a\polyspace\bin;c:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\z3py32;C:\z3py32\bin;C:\Program Files\Microsoft SQL Server\120\DTS\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\ManagementStudio\;C:\Program Files (x86)\Microsoft SQL Server\120\DTS\Binn\;C:\Program Files (x86)\Git\cmd£»C:\MinGW\bin
